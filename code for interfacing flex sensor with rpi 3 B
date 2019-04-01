@@ -1,0 +1,74 @@
+import serial as S1
+import serial as S2
+from time import sleep
+
+import subprocess 
+
+from time import sleep
+from Adafruit_CharLCD import Adafruit_CharLCD
+
+# instantiate lcd and specify pins
+lcd = Adafruit_CharLCD(rs=26, en=19,
+                       d4=13, d5=6, d6=5, d7=11,
+                       cols=16, lines=2)
+
+VCC = 4.98
+R_DIV = 47500.0
+ser = S1.Serial('/dev/ttyACM0', 9600)
+ser1 =S2.Serial('/dev/ttyACM0',9600)
+
+lcd.clear()
+# display text on LCD display \n = new line
+lcd.message('Speech synthesis')
+sleep(2)
+lcd.clear()
+lcd.message('using Raspberry\n    Pi 3')
+sleep(2)
+lcd.clear()
+
+while 1:
+    line = ser.readline()
+    line1=ser1.readline()
+    y=int(line)
+    x=int(line1)
+#print(y)
+#print(x)
+    flexV = y * VCC / 1023.0
+    flexR = R_DIV * (VCC / flexV - 1.0) 
+    flexV1 = x* VCC / 1023.0
+    flexR1 = R_DIV * (VCC / flexV1- 1.0)
+    #print(flexR)
+    #print(flexR1)
+    if(flexR>600 and flexR<800):
+        print('sensor1:',flexR)
+        lcd.message('Please come here')
+        text='"Please come here"'
+        print(text)
+        subprocess.call('echo '+text+'|festival --tts', shell=True)
+        lcd.clear()
+        
+    if(flexR>800 and flexR<1000):
+        print('sensor1:',flexR)
+        lcd.message('I need my Snacks ')
+        text='"I need my Snacks"'
+        print(text)
+        subprocess.call('echo '+text+'|festival --tts', shell=True)
+        lcd.clear()
+        
+    if(flexR1>600 and flexR1<800):
+        print('sensor2:',flexR1)
+        lcd.message('Please bring me\n  my lunch')
+        text='"Please bring me my lunch"'
+        print(text)
+        subprocess.call('echo '+text+'|festival --tts', shell=True)
+        lcd.clear()
+    
+
+    if(flexR1>850 and flexR1<1000):
+        print('sensor2:',flexR1)
+        lcd.message('I need coffee')
+        text='"I need coffee"'
+        print(text)
+        subprocess.call('echo '+text+'|festival --tts', shell=True)
+        lcd.clear()
+	
